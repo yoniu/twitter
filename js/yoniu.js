@@ -1,129 +1,54 @@
 $(function() {
-
+	/* yoniu themme */
 	$('#mobile-nav').click(function(){  
 		$(".nav-list").toggleClass('show-nav');
 	});
-	/* yoniu themme */
     $('#a-post-text').toggle(
 		function() {
 			$(".a-post-content").attr("style","font-size: 20px;");
-			return false
+			return false;
 		},
 		function() {
 			$(".a-post-content").attr("style","font-size: unset;");
-			return false
+			return false;
 		}
 	);
-	
     $(window).scroll(function() {
         if ($(this).scrollTop() > 0) {
-            $('#back-to-top').fadeIn()
+            $('#back-to-top').fadeIn();
         } else {
-            $('#back-to-top').fadeOut()
+            $('#back-to-top').fadeOut();
         }
     });
     $('#back-to-top').click(function() {
-        $('body,html').animate({
-            scrollTop: 0
-        }, 500);
-        return false
-    })
-	
-
+        $('body,html').animate({scrollTop: 0}, 500);
+        return false;
+    });
 });
-console.log("Tw by Yoniu : www.yoniu.xyz");
-var getBase64ByUrl = function(src, callback, outputFormat) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', src, true);
-
-    xhr.responseType = 'arraybuffer';
-
-    xhr.onload = function(e) {
-      if (xhr.status == 200) {
-        var uInt8Array = new Uint8Array(xhr.response);
-        var i = uInt8Array.length;
-        var binaryString = new Array(i);
-        while (i--) {
-          binaryString[i] = String.fromCharCode(uInt8Array[i]);
-        }
-        var data = binaryString.join('');
-        var base64 = window.btoa(data);
-        var dataUrl = "data:" + (outputFormat || "image/png") + ";base64," + base64;
-        callback.call(this, dataUrl);
-      }
-    };
-
-    xhr.send();
-  }
-function h2c_(){
-	var width = document.querySelector(".a-poster-content").offsetWidth;
-	var height = document.querySelector(".a-poster-content").offsetHeight;
-	var scale = 2;
-	var canvas = document.createElement("canvas");
-	var rect = document.querySelector(".a-poster-content").getBoundingClientRect();
-	canvas.width = width * scale;
-	canvas.height = height * scale;
-	var context = canvas.getContext("2d");
-	context.scale(scale, scale);
-	context.translate(-rect.left, -rect.top);
-	var options = {
-		width: width,
-		height: height,
-		useCORS: true, // 【重要】开启跨域配置
-		allowTaint: true,//允许跨域图片
-		taintTest: false,//是否在渲染前测试图片
-		logging: false
-	};
-	html2canvas(document.querySelector(".a-poster-content")).then(function(canvas) {
-		var imgUrl = canvas.toDataURL("image/png", 1.0);
-		var blob = base64Img2Blob(imgUrl);
-		var aLink = document.querySelector("#a-poster-download");
-		$(".a-poster-content").after('<img src="' + imgUrl + '" width="100%"/>');
-		$(".a-poster-content").parent().addClass('a-l-h-1');
-		$(".a-poster-content").remove();
-		aLink.download = new Date().getTime() + ".png";
-		aLink.href = URL.createObjectURL(blob);
+console.log("Tw by Yoniu : www.200011.net");
+function ajaxContent(){
+	$('a.T-content').click(function(){
+		var thisId = $(this);
+		var thisParent = $(this).parent();
+		if($(this).hasClass('loadingPost')){
+			return false;
+		}else{
+			$(this).text('加载中...');
+			$(this).addClass('loadingPost');
+			$.ajax({
+				url: $(this).attr('data-href'),
+				type: 'GET',
+				success: function(s){
+					thisParent.html($(s).find('.a-post-content').html()).addClass('a-post-content');;
+					lazy_load();
+					_load_baguetteBox(true);
+				},
+				error: function(){
+					thisId.text('加载失败');
+				}
+			});
+		}
 	});
-}
-function htmlToImg(success){
-        //延时1000ms,等待图片读入到blob文件对象，然后使用URL.createObjectURL转换成src可用的地址
-        setTimeout(function () {
-            //放大版html
-            var scaleContent=document.getElementById("scaleContent");
-            scaleContent.innerHTML=document.getElementById("shareContent").innerHTML;
-			var canvas = document.createElement("canvas");
-			canvas.width = width * scale;
-			canvas.height = height * scale;
-			var context = canvas.getContext("2d");
-            
-            //延时300ms,等待放大版html加载图片完毕
-            setTimeout(function () {
-                //转存图片
-                html2canvas(scaleContent, {
-                    useCORS: true, // 【重要】开启跨域配置
-                    allowTaint: true,//允许跨域图片
-                    taintTest: false,//是否在渲染前测试图片
-                    onrendered: function(canvas) {
-                        scaleContent.innerHTML="";
-                        scaleContent.remove();
-                        var dataUrl = canvas.toDataURL("image/jpeg");
-                        closeWaiting();
-                        success&&success(dataUrl);
-                    }
-                });
-            },300);
-        },1000);
-   }
-function base64Img2Blob(code){
-	var parts = code.split(';base64,');
-	var contentType = parts[0].split(':')[1];
-	var raw = window.atob(parts[1]);
-	var rawLength = raw.length;
-	var uInt8Array = new Uint8Array(rawLength);
-	for (var i = 0; i < rawLength; ++i) {
-	  uInt8Array[i] = raw.charCodeAt(i);
-	}
-	return new Blob([uInt8Array], {type: contentType});
 }
 function copyToClipboard(s){
 	if(window.clipboardData){
@@ -140,7 +65,7 @@ function copyToClipboard(s){
 	}
 }
 
-function _load_baguetteBox(){
+function _load_baguetteBox(iii = false){
 	$(".a-post-content p>img:not(.biaoqing)").each(function(i) {
 		if(!$(this).hasClass('biaoqing')){
 			if (!this.parentNode.href) {
@@ -167,9 +92,9 @@ function _load_baguetteBox(){
 		copyToClipboard(window.location.href);
 		_msg('已复制到剪贴板！', 3000);
 	});
-    $('#moonlight-nav,#moonlight').click(
-		function() {
-			$.post(themeurl,{yoniu_moonlight: $('body').hasClass('night') === true ? 'off' : 'on'}, function(b){
+	if(iii!=true){
+		$('#moonlight-nav,#moonlight').click(function() {
+			$.post(siteurl,{yoniu_moonlight: $('body').hasClass('night') === true ? 'off' : 'on'}, function(b){
 				if($('body').hasClass('night') === true){
 					$('body').removeClass('night');
 					$('body').addClass('bright');
@@ -188,8 +113,8 @@ function _load_baguetteBox(){
 					$('#moonlight-nav').find('span').text('日间模式');
 				}
 			});
-		}
-	);
+		});
+	}
 }
 function lazy_load(){
 	var bLazy = new Blazy({
@@ -213,7 +138,7 @@ function lazy_load(){
 				return false;
 			}
 			_msg('正在点赞...', 3000);
-			$.post(themeurl,{action: 'praise', id: id}, function(b){
+			$.post(siteurl,{action: 'praise', id: id}, function(b){
 				if(b=="false"){
 					_msg('您已赞过本文！', 3000);
 				}else{
@@ -243,7 +168,6 @@ function lazy_load(){
 	});
 	Prism.highlightAll();
 }
-
 function _sort(){
 	$("#yoniu-sortId").on('click','a', function(){  
 		$("#yoniu-sortId").find("a.staying").removeClass("staying");
@@ -270,6 +194,7 @@ function _sort(){
 					$('#main').append($res2);
 					ias();
 					lazy_load();
+					ajaxContent();
 					_msg('加载完成', 3000);
 				}   
 	        });   
@@ -285,8 +210,6 @@ function _msg(itext,time){
 		$('body').find('#yoniu-msg').removeClass('showtime');
 	}, time);
 }
-
-
 function ias(){
 	if($(".a-pageLink .next").length > 0) {}else{$(".a-pageLink .next").attr("style","display:none");}
 	$(".a-pageLink .next").click(function(){     
@@ -316,6 +239,7 @@ function ias(){
 						$(".a-pageLink").append('<a href="javascript:;" rel="nofollow">加载完毕</a>'); 
 					}
 					lazy_load();
+					ajaxContent();
 				}
 	        }); 		
 	    }   
@@ -346,15 +270,18 @@ function ajaxc() {
         if ($(comment_form).find('#author')[0]) {
             if ($(comment_form).find('#author').val() == '') {
 				_msg('请填写姓名', 3000);
+				$(submit_btn).attr('disabled', false).fadeTo('slow', 1);
                 return false;
             }
             if ($(comment_form).find('#mail').val() == '') {
 				_msg(txt_2, 3000);
+				$(submit_btn).attr('disabled', false).fadeTo('slow', 1);
                 return false;
             }
             var filter = /^[^@\s<&>]+@([a-z0-9]+\.)+[a-z]{2,4}$/i;
             if (!filter.test($(comment_form).find('#mail').val())) {
 				_msg(txt_3, 3000);
+				$(submit_btn).attr('disabled', false).fadeTo('slow', 1);
                 return false;
             }
         }
