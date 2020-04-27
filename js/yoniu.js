@@ -32,14 +32,14 @@ function ajaxContent(){
 		var thisParent = $(this).parent();
 		if($(this).hasClass('loadingPost')){
 			return false;
-		}else{
+		}else if($(this).hasClass('ajax-load')){
 			$(this).text('加载中...');
 			$(this).addClass('loadingPost');
 			$.ajax({
 				url: $(this).attr('data-href'),
 				type: 'GET',
 				success: function(s){
-					thisParent.html($(s).find('.a-post-content').html()).addClass('a-post-content');;
+					thisParent.html($(s).find('.a-post-content').html()).addClass('a-post-content');
 					lazy_load();
 					_load_baguetteBox(true);
 				},
@@ -47,6 +47,33 @@ function ajaxContent(){
 					thisId.text('加载失败');
 				}
 			});
+		}
+	});
+}
+function pwSent(cid){
+	var mypassword = $('input[name="pw'+cid+'"]').val();
+	if(mypassword == ""){
+		alert('密码不能为空');
+		return false;
+	}
+	$.ajax({
+		url: window.location.href,
+		type: 'POST',
+		data: {themeAction:'password',mypassword:mypassword},
+		beforeSend: function(){
+			_msg('加载中', 3000);
+		},
+		success: function(s){
+			if(s!="密码错误"){
+				$('.a-post-content').html(s);
+			}else{
+				alert('密码错误');
+			}
+			return false;
+		},
+		error: function(){
+			alert('加载错误');
+			return false;
 		}
 	});
 }
@@ -83,11 +110,6 @@ function _load_baguetteBox(iii = false){
 		share: false
 	});
 	
-	$('.a-post-content').find('h1, h2, h3, h4, h5, h6').each(function(){
-		var a = $(this);
-		a.attr("id",a.html());
-		a.wrap("<a class='a-post-h-Link' href='#" + a.html() + "'></a>");
-	});
     $('#a-post-copy').click(function() {
 		copyToClipboard(window.location.href);
 		_msg('已复制到剪贴板！', 3000);
@@ -186,7 +208,9 @@ function _sort(){
 					$('.page-Link').fadeOut();
 					$('.page-Link').remove();
 				},
-				error: function(request) {},   
+				error: function(request) {
+					window.location.href = href;
+				},   
 				success: function(data) {
 					var $res = $(data).find('#a-context');
 					var $res2 = $(data).find('.page-Link');
