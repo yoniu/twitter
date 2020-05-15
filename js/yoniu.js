@@ -101,13 +101,14 @@ function _load_baguetteBox(iii = false){
 				$(this).attr("data-src",this.src);
 				$(this).attr("src","data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==");
 				$(this).after('<div class="a-post-imgTip">' + this.alt + '</div>');
-				$(this).parent().parent().attr("style","margin: 0 -10px 10px;");
 			}
 		}
 	});
 	$('.a-post-content').lightGallery({
 		selector: '.a-post-imgLink, .yoniu-index-img',
-		share: false
+		share: false,
+		showThumbByDefault: false,
+		autoplayControls: false
 	});
 	
     $('#a-post-copy').click(function() {
@@ -262,6 +263,7 @@ function ias(){
 						$(".a-pageLink .next").attr("style","display:none"); 
 						$(".a-pageLink").append('<a href="javascript:;" rel="nofollow">加载完毕</a>'); 
 					}
+					_msg('加载完成', 3000);
 					lazy_load();
 					ajaxContent();
 				}
@@ -269,6 +271,17 @@ function ias(){
 	    }   
 		return false;   
 	});
+}
+function base64Img2Blob(code){
+	var parts = code.split(';base64,');
+	var contentType = parts[0].split(':')[1];
+	var raw = window.atob(parts[1]);
+	var rawLength = raw.length;
+	var uInt8Array = new Uint8Array(rawLength);
+	for (var i = 0; i < rawLength; ++i) {
+	  uInt8Array[i] = raw.charCodeAt(i);
+	}
+	return new Blob([uInt8Array], {type: contentType});
 }
 
 var txt_1 = '必须填写用户名',
