@@ -24,6 +24,30 @@ $(function() {
         $('body,html').animate({scrollTop: 0}, 500);
         return false;
     });
+	if(darkmode == true){
+		function yoniu_darkmode(xx){
+			if(xx.matches) {
+				$('body').addClass('night');
+				$('body').removeClass('bright');
+				$('#moonlight-nav').find('i').addClass('fa-sun-o');
+				$('#moonlight-nav').find('i').removeClass('fa-moon-o');
+				$('#moonlight').find('i').addClass('fa-sun-o');
+				$('#moonlight').find('i').removeClass('fa-moon-o');
+				$('#moonlight-nav').find('span').text('日间模式');
+			}else{
+				$('body').removeClass('night');
+				$('body').addClass('bright');
+				$('#moonlight-nav').find('i').removeClass('fa-sun-o');
+				$('#moonlight-nav').find('i').addClass('fa-moon-o');
+				$('#moonlight').find('i').removeClass('fa-sun-o');
+				$('#moonlight').find('i').addClass('fa-moon-o');
+				$('#moonlight-nav').find('span').text('夜间模式');
+			}
+		}
+		var xx = window.matchMedia ("(prefers-color-scheme: dark)");
+		yoniu_darkmode(xx);
+		xx.addListener(yoniu_darkmode);
+	}
 });
 console.log("Tw by Yoniu : www.200011.net");
 function ajaxContent(){
@@ -138,6 +162,17 @@ function _load_baguetteBox(iii = false){
 			});
 		});
 	}
+	$('pre code').each(function(){
+		var lines = $(this).text().split('\n').length - 1;
+		var $numbering = $('<ul/>').addClass('pre-numbering');
+		$(this)
+			.addClass('has-numbering')
+			.parent()
+			.append($numbering);
+		for(i=0;i<=lines;i++){
+			$numbering.append($('<li/>').text(i+1));
+		}
+	});
 }
 function lazy_load(){
 	var bLazy = new Blazy({
@@ -233,7 +268,7 @@ function _msg(itext,time){
 	$('body').find('#yoniu-msg').addClass('showtime');
 	setTimeout(function(){
 		$('body').find('#yoniu-msg').removeClass('showtime');
-	}, time);
+	}, time-1000);
 }
 function ias(){
 	if($(".a-pageLink .next").length > 0) {}else{$(".a-pageLink .next").attr("style","display:none");}
