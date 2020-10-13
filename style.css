@@ -1,5 +1,6 @@
 .bright{
 	--bgcolor: #fff;
+	--bgcolorop: rgb(255,255,255,.9);
 	--border: rgb(230, 236, 240);
 	--shadow: rgba(0,0,0,.25);
 	--time: #818181;
@@ -11,6 +12,7 @@
 }
 .night{
     --bgcolor: rgb(21,32,43);
+	--bgcolorop: rgb(21,32,43,.9);
     --border: rgb(37,51,65);
     --shadow: rgba(0,0,0,.25);
     --time: #818181;
@@ -236,6 +238,9 @@ a:hover{
 	color: var(--themecolor);
 	flex-shrink: 0;
 }
+.toptip>a#mobile-nav{
+	display: none;
+}
 .toptip>a:hover{
 	text-decoration: none;
 	color: var(--themecolor);
@@ -287,10 +292,14 @@ a:hover{
 	font-size: 34px;
 	font-weight: 700;
 	color: #fff;
+	text-align: center;
+	max-width: 96%;
 }
 .bloginfo .bic-description{
 	font-size: 14px;
 	color: #fff;
+	text-align: center;
+	max-width: 96%;
 }
 .bloginfo .bic-iconList{
 	display: flex;
@@ -754,12 +763,12 @@ a.T-content>p{
 	position: absolute;
 	font-size: 20px;
 	color: var(--hightlight);
-	position: absolute;
 	top: 0;
 	left: 0;
 	height: 100%;
 	width: 100%;
 	background-color: rgba(0,0,0,.5);
+	border-radius: 3px;
 }
 
 .list-comment-content{
@@ -904,6 +913,7 @@ a.T-content>p{
 	overflow: hidden;
 	opacity: 0;
 	visibility: hidden;
+	z-index: 10086;
 	transition: all .2s ease-out;
 }
 #yoniu-catalog:hover .catalog-index,
@@ -1149,7 +1159,7 @@ a.T-content>p{
 	border: unset;
 	padding: 1.25rem 1.25rem;
 }
-.imlocked>.fa{
+.imlocked>.fa,.a-post-content form.protected>.fa{
 	position: absolute;
 	right: 10px;
 	bottom: -10px;
@@ -1174,6 +1184,57 @@ a.T-content>p{
 .content-fa{
 	min-width: 14px;
 	margin-right: 10px;
+}
+.a-post-content form.protected{
+	display: flex;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+	border: unset;
+	padding: 1.25rem 1.25rem;
+	color: var(--contentcolor);
+	background-color: var(--contentbg);
+	border-color: var(--themecolorop);
+	border: 1px solid transparent;
+	border-radius: .25rem;
+}
+.a-post-content form.protected p{
+	display: flex;
+	justify-content: center;
+}
+.a-post-content form.protected p.word{
+	display: none;
+}
+.a-post-content form.protected p input.text{
+	border-radius: 5px;
+	border: solid 1px var(--border);
+	padding: 5px 10px;
+	margin-right: 10px;
+	min-width: 240px;
+	display: block;
+	background: transparent;
+	outline: none;
+	font-size: 15px;
+	letter-spacing: 1.5px;
+	-webkit-transition: all .5s ease-out;
+	-moz-transition: all .5s ease-out;
+	transition: all .5s ease-out;
+	color: var(--contentcolor);
+	z-index: 1;
+}
+.a-post-content form.protected p input.text:focus{
+	border: solid 1px var(--themecolor);
+	background: var(--bgcolor);
+}
+.a-post-content form.protected p input.submit{
+	padding: 4px 15px;
+	text-align: center;
+	border-radius: 5px;
+	color: var(--hightlight);
+	background-color: var(--themecolor);
+	font-size: 13px;
+	border: none;
+	z-index: 1;
 }
 
 .yoniu-zhedie{
@@ -1438,7 +1499,15 @@ textarea, input{
 	overflow: none;
 }
 .classtip{
-	padding-bottom: 10px;
+	margin-bottom: 10px;
+	color: var(--contentcolor);
+}
+.classtip1{
+	display: inline-block;
+	margin-left: 10px;
+	padding: 5px 10px;
+	line-height: 1;
+	background-color: var(--border);
 	color: var(--contentcolor);
 }
 .comments-title{
@@ -1635,6 +1704,108 @@ textarea, input{
 .widget-media-Link:hover{
 	color: var(--contentcolor);
 	text-decoration: none;
+}
+.box-top{
+	position: relative;
+}
+.box-img{
+	position: relative;
+    width: 100%;
+    background-position: 50% 50%;
+    background-size: cover;
+    overflow: hidden;
+	z-index: 10010;
+}
+.box-img::before{
+	content: '';
+    padding-top: 45%;
+    float: left;
+}
+.box-img::after{
+	content: '';
+    position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: linear-gradient(0, var(--contentbg), transparent);
+}
+.box-avatar{
+	position: relative;
+	margin-top: -54px;
+	z-index: 10027;
+	padding: 0 15px;
+	display: flex;
+	align-items: flex-end;
+}
+.box-avatar-left{
+    flex: 0 1 auto;
+}
+.box-avatar-left img{
+	margin-right: 10px;
+	border: 3px solid var(--contentbg);
+}
+.box-avatar-right{
+    flex: 1 1 auto;
+	font-size: 1.2rem;
+	color: var(--acolor);
+}
+.box-bottom{
+	color: var(--contentcolor);
+}
+.box-bottom-info{
+	padding: 5px 20px 10px;
+}
+.box-bottom .bic-iconList{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	border-top: 1px solid var(--border);
+	padding: 5px 15px;
+}
+.box-bottom .bic-iconList>a{
+	display: block;
+	font-size: 18px;
+	color: var(--contentcolor)!important;
+}
+.box-bottom .bic-iconList>a:hover{
+	opacity: .8;
+}
+.box-bottom .bic-iconList>a:not(:last-child) {
+	margin-right: 20px;
+}
+.box-shang{
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	right: 15px;
+	top: 15px;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background-color: var(--shadow);
+	-webkit-backdrop-filter: blur(20px);
+	backdrop-filter: blur(20px);
+	cursor: pointer;
+	z-index: 10028;
+	-webkit-transition: all .5s ease-out;
+	-moz-transition: all .5s ease-out;
+	transition: all .5s ease-out;
+}
+.box-shang:hover{
+	background-color: var(--themecolor);
+}
+.box-shang a{
+	flex: 1 1 auto;
+	text-align: center;
+	color: var(--hightlight);
+	font-size: 0.8rem;
+}
+.box-shang a:hover{
+	text-decoration: none;
+	color: var(--hightlight);
 }
 
 .footer-page{
@@ -1938,6 +2109,148 @@ body.loading #loading img{
 	box-shadow: 0 0 40px rgba(0,0,0,.2);
 }
 
+/* 底部工具栏 */
+
+#footer_bar{
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	padding: 5px 40px;
+	display: none;
+	justify-content: space-between;
+	align-items: center;
+	border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--bgcolor);
+	z-index:10030;
+	transform: translateY(0);
+	transition: all .5s ease-out;
+	-webkit-backdrop-filter: saturate(180%) blur(20px);
+	backdrop-filter: saturate(180%) blur(20px);
+	background-color: var(--bgcolorop);
+}
+#footer_bar.hidetime{
+	transform: translateY(100px);
+	transition: all 1s ease-out;
+}
+
+.yybar_icon{
+	font-size: 1.5rem;
+	color: var(--content2);
+	--barcolor: var(--content2);
+}
+.yybar_icon.focus{
+	font-size: 1.5rem;
+	color: var(--content2);
+	--barcolor: var(--content2);
+}
+.yybar_icon:hover{
+	color: var(--themecolor);
+	--barcolor: var(--themecolor);
+}
+
+/*  搜索页  */
+.search-card{
+	position: relative;
+	padding: 15px;
+	border-bottom: 1px solid var(--border);
+}
+#search-area{
+	display: -webkit-flex;
+	display: flex;
+	align-items: center;
+	background-color: var(--contentbg);
+	border: 1px solid var(--border);
+	border-radius: 25px;
+	transition: all .5s ease-out;
+}
+#search-area>.submit{
+	margin: 0 10px 0 20px;
+	padding: 0;
+	background-color: transparent;
+	border: 1px solid transparent;
+	color: var(--contentcolor);
+	outline: none;
+}
+#search-area>.a-text{
+	flex-grow: 1;
+}
+.search-random{
+	border-top: 10px solid var(--border);
+	position: relative;
+}
+.search-random-title{
+	padding: 10px 15px;
+	font-weight: bold;
+	border-bottom: 1px solid var(--border);
+}
+.random-list{
+	padding: 10px 15px;
+	display: -webkit-flex;
+	display: flex;
+	align-items: flex-start;
+	border-bottom: 1px solid var(--border);
+	transition: all .5s ease-out;
+}
+.random-list:hover{
+	background-color: var(--contentbg);
+}
+.random-left{
+	position: relative;
+	flex-grow: 1;
+	overflow: hidden;
+	margin-right: 10px;
+}
+.random-des{
+	font-size: .8rem;
+	color: var(--contentcolor);
+}
+.random-des>span:first-child{
+	margin-right: 5px;
+}
+.random-des>span:last-child{
+	margin-left: 5px;
+}
+.random-title{
+	line-height: 1.3125;
+	overflow-wrap: break-word;
+}
+.random-title>a{
+	color: var(--acolor);
+	font-weight: bolder;
+}
+.random-title>a:hover{
+	text-decoration: none;
+}
+.random-right{
+	position: relative;
+	width: 15%;
+	max-width: calc(98px);
+	min-width: calc(69px);
+	overflow: hidden;
+}
+.random-right img{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	object-fit: cover;
+	border: 0!important;
+	border-radius: 15px;
+}
+.random-right::before {
+    content: '';
+    padding-top: 100%;
+    float: left;
+}
+.random-right::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+
 @media screen and (min-width: 992px) and (max-width: 1124px) { 
 	#left{
 		flex: 0 0 236px;
@@ -1952,17 +2265,14 @@ body.loading #loading img{
 /*   手机模式   */
 @media screen and (max-width: 992px) { 
 	#left{
-		position: relative;
-		width: 100%;
-		height: unset;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-		padding-top: unset;
-		border-bottom: 1px solid var(--border);
-		flex: 0 0 100%;
-		max-width: 100%;
-		min-width: 100%;
+		transform: translateX(-280px);
+		transition: all .1s ease-out;
+		z-index: 10040;
+	}
+	#left.showtime{
+		transform: translateX(0px);
+		box-shadow: 1px 0 40px 0px var(--shadow);
+		transition: all .1s ease-out;
 	}
 	#main{
 		margin-left: unset;
@@ -1970,8 +2280,23 @@ body.loading #loading img{
 		border-right: 0px;
 		border-bottom: 20px solid var(--border);
 	}
+	.toptip>span{
+		text-align: center;
+	}
+	.toptip>a#mobile-nav{
+		display: -webkit-flex;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 38px;
+		height: 38px;
+		font-size: 16px;
+		border-radius: 50%;
+		color: var(--themecolor);
+		flex-shrink: 0;
+		margin-left: 0;
+	}
 	.list-circle>a{
-		margin-top: unset;
 		border-radius: unset;
 	}
 	.list-btn>a{
@@ -1999,36 +2324,10 @@ body.loading #loading img{
 	.yoniu-nav-list>a span {
 		font-weight: unset;
 	}
-	.nav-list{
-		position: absolute;
-		margin-top: 60px;
-		top: 0;
-		right: 10px;
-		border-radius: 5px;
-		min-width: 150px;
-		background: var(--bgcolor);
-		box-shadow: 0 5px 40px 0px var(--shadow);
-		opacity: 0;
-		visibility: hidden;
-		transition: all 0.5s ease 0s;
-	}
-	.nav-list:before {
-		content: "";
-		position: absolute;
-		top: -7px;
-		right: 20px;
-		margin-left: -7px;
-		border-left: 7px solid transparent;
-		border-right: 7px solid transparent;
-		border-bottom: 7px solid var(--bgcolor);
-	}
 	.mobile-btn{
 		display: block;
 	}
 	.mobile-hidden{
-		display: none;
-	}
-	.toptip{
 		display: none;
 	}
 	.nav-list a{
@@ -2061,6 +2360,9 @@ body.loading #loading img{
 		left: unset;
 		right: 0;
 	}
+	#footer_bar{
+		display: flex;
+	}
 }
 /* PrismJS 1.19.0
 https://prismjs.com/download.html#themes=prism-coy&languages=markup+css+clike+javascript+abap+abnf+actionscript+ada+antlr4+apacheconf+apl+applescript+aql+arduino+arff+asciidoc+asm6502+aspnet+autohotkey+autoit+bash+basic+batch+bbcode+bison+bnf+brainfuck+brightscript+bro+c+concurnas+csharp+cpp+cil+coffeescript+cmake+clojure+crystal+csp+css-extras+d+dart+diff+django+dns-zone-file+docker+ebnf+eiffel+ejs+elixir+elm+etlua+erb+erlang+fsharp+factor+firestore-security-rules+flow+fortran+ftl+gcode+gdscript+gedcom+gherkin+git+glsl+gml+go+graphql+groovy+haml+handlebars+haskell+haxe+hcl+http+hpkp+hsts+ichigojam+icon+inform7+ini+io+j+java+javadoc+javadoclike+javastacktrace+jolie+jq+jsdoc+js-extras+js-templates+json+jsonp+json5+julia+keyman+kotlin+latex+latte+less+lilypond+liquid+lisp+livescript+lolcode+lua+makefile+markdown+markup-templating+matlab+mel+mizar+monkey+moonscript+n1ql+n4js+nand2tetris-hdl+nasm+neon+nginx+nim+nix+nsis+objectivec+ocaml+opencl+oz+parigp+parser+pascal+pascaligo+pcaxis+perl+php+phpdoc+php-extras+plsql+powershell+processing+prolog+properties+protobuf+pug+puppet+pure+python+q+qml+qore+r+jsx+tsx+renpy+reason+regex+rest+rip+roboconf+robotframework+ruby+rust+sas+sass+scss+scala+scheme+shell-session+smalltalk+smarty+solidity+solution-file+soy+sparql+splunk-spl+sqf+sql+stylus+swift+tap+tcl+textile+toml+tt2+turtle+twig+typescript+t4-cs+t4-vb+t4-templating+vala+vbnet+velocity+verilog+vhdl+vim+visual-basic+wasm+wiki+xeora+xojo+xquery+yaml+zig */
@@ -2069,7 +2371,6 @@ https://prismjs.com/download.html#themes=prism-coy&languages=markup+css+clike+ja
  * Based on https://github.com/tshedor/workshop-wp-theme (Example: http://workshop.kansan.com/category/sessions/basics or http://workshop.timshedor.com/category/sessions/basics);
  * @author Tim  Shedor
  */
-
 code[class*="language-"],
 pre[class*="language-"] {
 	color: black;
@@ -2082,7 +2383,7 @@ pre[class*="language-"] {
 	word-break: normal;
 	word-wrap: normal;
 	line-height: 1.5;
-
+	position: relative;
 	-moz-tab-size: 4;
 	-o-tab-size: 4;
 	tab-size: 4;
