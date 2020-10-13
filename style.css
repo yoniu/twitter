@@ -2077,7 +2077,7 @@ body.loading #loading img{
 	right: 0;
 	background-color: var(--themecolorop);
 	backdrop-filter: blur(50px);
-	z-index: 1040;
+	z-index: 99999;
 }
 #yoniu-poster-cover .cover-body{
 	max-width: 480px;
@@ -2125,9 +2125,7 @@ body.loading #loading img{
 	z-index:10030;
 	transform: translateY(0);
 	transition: all .5s ease-out;
-	-webkit-backdrop-filter: saturate(180%) blur(20px);
-	backdrop-filter: saturate(180%) blur(20px);
-	background-color: var(--bgcolorop);
+	background-color: var(--bgcolor);
 }
 #footer_bar.hidetime{
 	transform: translateY(100px);
