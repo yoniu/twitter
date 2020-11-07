@@ -10,15 +10,6 @@ $(document).ready(function() {
 		'<li class="wmd-button" id="wmd-reply-button" style="" title="回复可见"><svg t="1593185645641" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6282" width="25" height="25"><path d="M896 128H128a32 32 0 0 0-32 32v576a32 32 0 0 0 32 32h288v-64H160V192h704v512h-256c-8.832 0-16.832 3.584-22.656 9.376l-159.968 160 45.248 45.248L621.248 768H896a32 32 0 0 0 32-32V160a32 32 0 0 0-32-32" fill="#000000" p-id="6283"></path><path d="M560 448a48 48 0 1 0-95.968-0.032A48 48 0 0 0 560 448M240 448a48 48 0 1 0 95.968 0.032A48 48 0 0 0 240 448M784 448a48 48 0 1 0-95.968-0.032A48 48 0 0 0 784 448" fill="#000000" p-id="6284"></path></svg></li>' + 
 		'<style>' + '.wmd-button-row{height: 100%!important;}</style>');
 
-		$('#text').before('<div class="wmd-button OwO" style="" title="插入表情"></div>');
-		var owo = new OwO({
-			container: document.getElementsByClassName('OwO')[0],
-			target: document.getElementById('text'),
-			position: 'down',
-			width: '100%',
-			maxHeight: '220px'
-		});
-
 		$(document).on('click', '#wmd-music-button',
 		function() {
 			$('body').append('<div id="MetingPanel">' + '<div class="wmd-prompt-background" style="position: fixed; top: 0px; z-index: 1000; opacity: 0.5; height: 100%; left: 0px; width: 100%;"></div>' + '<div class="wmd-prompt-dialog">' + '<div>' + '<p><b>插入音乐</b></p>' + '<p><labe>音乐直链地址</labe><input name="music-link" type="text" placeholder="http(s)://"></input></p>' + '<p><labe>歌手</labe><input name="music-singer" type="text"></input></p>' + '<p><labe>歌名</labe><input name="music-song" type="text"></input></p>' + '<p><labe>封面图直链</labe><input name="music-pic" type="text"></input></p>' + '</div>' + '<button type="button" class="btn btn-s primary" id="music_ok">确定</button>' + '<button type="button" class="btn btn-s" id="music_cancel">取消</button>' + '</div>' + '</div>');
@@ -208,6 +199,39 @@ $(document).ready(function() {
 			inserContentToTextArea(myField, textContent);
 		}else{
 			alert('请先上传文件');
+		}
+		return false;
+	});
+	$(document).on('click', '#location',function() {
+		var map = new AMap.Map('map',{
+			resizeEnable: true
+		});
+		AMap.plugin('AMap.Geolocation', function() {
+			var geolocation = new AMap.Geolocation({
+				timeout: 10000,
+				zoomToAccuracy: true
+			});
+			geolocation.getCurrentPosition(function(status,result){
+				if(status=='complete'){
+					onComplete(result)
+				}else{
+					onError(result)
+				}
+			});
+		});
+		//解析定位结果
+		function onComplete(data) {
+			$('input[name="fields[location]"]').val(data.formattedAddress + "|" + data.position.getLng() + "|" + data.position.getLat());
+			var marker = new AMap.Marker({
+				position: data.position
+			});
+			map.setZoomAndCenter(15,data.position);
+			map.add(marker);
+			$('#map').addClass('success');
+		}
+		//解析定位错误信息
+		function onError(data) {
+			$('input[name="fields[location]"]').val('定位失败');
 		}
 		return false;
 	});
