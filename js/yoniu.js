@@ -10,6 +10,17 @@ $(function() {
 			return false;
 		}
 	);
+	
+    $('.yoniu-user-box.yoniu-login').click(function() {
+		if($('.yoniu-user-box').hasClass('yoniu-user-box-active')){
+			$('.yoniu-user-box').removeClass('yoniu-user-box-active')
+			$('.yoniu-user-listbox').removeClass('yoniu-user-listbox-active');
+		}else{
+			$('.yoniu-user-box').addClass('yoniu-user-box-active')
+			$('.yoniu-user-listbox').addClass('yoniu-user-listbox-active');
+		}
+	});
+	
 	var startx, starty;
     function getAngle(angx, angy) {
         return Math.atan2(angy, angx) * 180 / Math.PI;
