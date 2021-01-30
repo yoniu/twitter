@@ -1336,7 +1336,7 @@ a.T-content>p{
 	display: inline-block;
     font-size: 1.5rem;
     margin-bottom: 10px;
-    box-shadow: inset 0 -7px 0 0 var(--themecolorop);
+    box-shadow: inset 0 -14px 0 0 var(--themecolorop);
 }
 .a-post-content h3{
     position: relative;
@@ -1518,7 +1518,7 @@ a.T-content>p{
 }
 .media-body a{
 	font-size: 1.125rem;
-    color: var(--hightlight);
+    color: var(--hightlight)!important;
 }
 
 .alert-yoniu{
@@ -1679,6 +1679,10 @@ a.T-content>p{
 	position: relative;
 	padding: 10px 0;
 }
+.yoniu-timeline a,.yoniu-message-send .yoniu-message-word a{
+	color: var(--hightlight)!important;
+	text-decoration: underline var(--hightlight)!important;
+}
 .yoniu-timeline-title{
 	position: relative;
 	margin-top: 1rem;
@@ -1817,6 +1821,7 @@ a.T-content>p{
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
+	margin-top: 1rem;
 }
 .reader>div{
 	flex: 0 0 33.33%;
@@ -2962,6 +2967,16 @@ body.loading #loading img{
 	}
 	.article-bigImg-title {
 		font-size: 20px;
+	}
+	.yoniu-author-box-content-header {
+		margin-top: -52.5px;
+	}
+	.yoniu-author-box-content-header>img{
+		width: 100px;
+		height: 100px;
+	}
+	.yoniu-author-box-button{
+		font-size: .9rem;
 	}
 	#yoniu-catalog .catalog-index{
 		left: unset;
