@@ -1,0 +1,13 @@
+[version]2.3[/version]
+[updata_log]
+<li>万众瞩目的前台发布</li>
+<li>全新的主题后台设置</li>
+<li>友链/导航新增快捷加入</li>
+<li>全新的侧边栏样式</li>
+<li>全新的文章列表风格</li>
+<li>全新的幻灯片风格</li>
+<li>全新的Pjax/Ajax评论</li>
+<li>支持设置个人主页头图/个人描述</li>
+<li>多彩文章新增链接卡片</li>
+<li>修复已存在部分bug</li>
+[/updata_log]
