@@ -54,7 +54,7 @@ $(document).ready(function() {
 		});
 		$(document).on('click', '#wmd-colorful-button',
 		function() {
-			$('body').append('<div id="colorfulPanel">' + '<div class="wmd-prompt-background" style="position: fixed; top: 0px; z-index: 1000; opacity: 0.5; height: 100%; left: 0px; width: 100%;"></div>' + '<div class="wmd-prompt-dialog">' + '<div>' + '<p><b>插入多彩html代码</b></p>' + '<p><select id="yoniu-colorful">' + '<option value="timeline">时间轴' + '<option value="messageReceive">聊天气泡（接收）' + '<option value="messageSend">聊天气泡（发送）' + '</select></p>' + '</div>' + '<button type="button" class="btn btn-s primary" id="colorful_ok">确定</button>' + '<button type="button" class="btn btn-s" id="colorful_cancel">取消</button>' + '</div>' + '</div>');
+			$('body').append('<div id="colorfulPanel">' + '<div class="wmd-prompt-background" style="position: fixed; top: 0px; z-index: 1000; opacity: 0.5; height: 100%; left: 0px; width: 100%;"></div>' + '<div class="wmd-prompt-dialog">' + '<div>' + '<p><b>插入多彩html代码</b></p>' + '<p><select id="yoniu-colorful">' + '<option value="timeline">时间轴' + '<option value="messageReceive">聊天气泡（接收）' + '<option value="messageSend">聊天气泡（发送）' + '<option value="linkCardIcon">链接卡片（无封面）' + '<option value="linkCardImage">链接卡片（有封面）' + '</select></p>' + '</div>' + '<button type="button" class="btn btn-s primary" id="colorful_ok">确定</button>' + '<button type="button" class="btn btn-s" id="colorful_cancel">取消</button>' + '</div>' + '</div>');
 		});
 
 		$(document).on('click', '#music_cancel',
@@ -221,6 +221,10 @@ $(document).ready(function() {
 				textContent = '\r\n' + '!!!' + '\r\n' + '<div class="yoniu-message-receive">' + '\r\n' + '    <div class="yoniu-message-user"><img src="头像图片链接" alt="avatar" /><span>名字</span></div>' + '\r\n' + '    <div class="yoniu-message-word"><span>信息内容</span></div>' + '\r\n' + '</div>' + '\r\n' + '!!!' + '\r\n';
 			}else if(myab == 'messageSend'){
 				textContent = '\r\n' + '!!!' + '\r\n' + '<div class="yoniu-message-send">' + '\r\n' + '    <div class="yoniu-message-user"><img src="头像图片链接" alt="avatar" /><span>名字</span></div>' + '\r\n' + '    <div class="yoniu-message-word"><span>信息内容</span></div>' + '\r\n' + '</div>' + '\r\n' + '!!!' + '\r\n';
+			}else if(myab == 'linkCardIcon'){
+				textContent = '\r\n' + '!!!' + '\r\n' + '<a href="链接地址" class="yoniu-link-card" target="_blank">' + '\r\n' + '  <div class="link-card-left"><i class="link-card-img fa fa-link"></i></div>' + '\r\n' + '  <div class="link-card-right">' + '\r\n' + '    <span class="link-card-title">链接标题</span>' + '\r\n' + '    <span class="link-card-desc">链接描述</span>' + '\r\n' + '    <span class="link-card-tip">链接域名（如: t.co）</span>' + '\r\n' + '  </div>' + '\r\n' + '</a>' + '\r\n' + '!!!' + '\r\n';
+			}else if(myab == 'linkCardImage'){
+				textContent = '\r\n' + '!!!' + '\r\n' + '<a href="链接地址" class="yoniu-link-card" target="_blank">' + '\r\n' + '  <div class="link-card-image"><div class="link-card-img" style="--background:url(封面图链接);"></div></div>' + '\r\n' + '  <div class="link-card-right">' + '\r\n' + '    <span class="link-card-title">链接标题</span>' + '\r\n' + '    <span class="link-card-desc">链接描述</span>' + '\r\n' + '    <span class="link-card-tip"><i class="fa fa-link"></i> 链接域名（如: t.co）</span>' + '\r\n' + '  </div>' + '\r\n' + '</a>' + '\r\n' + '!!!' + '\r\n';
 			}
 			myField = document.getElementById('text');
 			inserContentToTextArea(myField, textContent, '#colorfulPanel');

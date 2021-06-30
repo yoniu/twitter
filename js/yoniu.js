@@ -10,6 +10,16 @@ $(function() {
 			return false;
 		}
 	);
+
+	let archive_time = 0;
+	$('.archive-widget>.widget-list:not(.archive-show-more)').each(function (){
+		if(++archive_time>4){
+			$(this).hide();
+		}
+		if(archive_time == 4){
+			$(this).after('<div class="widget-list archive-show-more"><a href="javascript:archiveShowMore();">显示更多</a></div>');
+		}
+	});
 	
     $('.yoniu-user-box.yoniu-login').click(function() {
 		if($('.yoniu-user-box').hasClass('yoniu-user-box-active')){
@@ -19,6 +29,53 @@ $(function() {
 			$('.yoniu-user-box').addClass('yoniu-user-box-active')
 			$('.yoniu-user-listbox').addClass('yoniu-user-listbox-active');
 		}
+	});
+
+	$('form[name=pushPost]').submit(function(){
+		var data = $(this).serialize();
+		var cookiePrefix = $('input[name=cookiePrefix]').val();
+		$.ajax({
+			type: 'post',
+			url: $(this).attr('action'),
+			dataType: 'text',
+			data: data,
+			beforeSend: function(){
+				$('.push-post-button button').attr('disabled','disabled');
+				_msg('发布中...', 3000);
+			},
+			success: function(e) {
+				$('#push-post').hide();
+				if(getCookie(cookiePrefix + '__typecho_notice_type') == 'success'){
+					_msg('发布完成', 3000);
+					document.cookie = cookiePrefix + '__typecho_notice_type=;';
+				}else{
+					_msg('发布失败', 3000);
+				}
+				setTimeout(function(){
+					location.reload();
+				}, 2000);
+			},
+			error: function(){
+				$('#push-post').hide();
+				_msg('发布失败', 3000);
+				setTimeout(function(){
+					location.reload();
+				}, 2000);
+			}
+		});
+		return false;
+	});
+
+	$('.image-upload-done').click(function(){
+		image_url = $('input[name=image-link]').val();
+		image_des = $('input[name=image-des]').val();
+		textContent = '![' + image_des + '](' + image_url + ')';
+		myField = document.getElementById('text');
+		inserContentToTextArea(myField, textContent);
+		$('input[name=image-link]').val(null);
+		$('input[name=image-des]').val(null);
+		$('#image-upload').attr('checked', false);
+		return false;
 	});
 	
 	var startx, starty;
@@ -91,6 +148,52 @@ $(function() {
 	}
 });
 console.log("Tw by Yoniu : www.200011.net");
+function archiveShowMore(){
+	$('.archive-widget>.widget-list').each(function (){
+		if($(this).hasClass('archive-show-more')){
+			$(this).hide();
+		}else{
+			$(this).show();
+		}
+	});
+}
+function pushPost(){
+	$('#push-post').css({'display':'flex'});
+}
+function inserContentToTextArea(myField, textContent, modelId = '') {
+	if (modelId != '') {
+		$(modelId).remove();
+	}
+	if (document.selection) {
+		myField.focus();
+		var sel = document.selection.createRange();
+		sel.text = textContent;
+		myField.focus();
+	} else if (myField.selectionStart || myField.selectionStart == '0') {
+		var startPos = myField.selectionStart;
+		var endPos = myField.selectionEnd;
+		var cursorPos = startPos;
+		myField.value = myField.value.substring(0, startPos) + textContent + myField.value.substring(endPos, myField.value.length);
+		cursorPos += textContent.length;
+		myField.selectionStart = cursorPos;
+		myField.selectionEnd = cursorPos;
+		myField.focus();
+	} else { //其他环境
+		myField.value += textContent;
+		myField.focus();
+	}
+}
+function getCookie(cname)
+{
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0; i<ca.length; i++) 
+  {
+    var c = ca[i].trim();
+    if (c.indexOf(name)==0) return c.substring(name.length,c.length);
+  }
+  return "";
+}
 function ajaxContent(){
 	$('a.T-content').click(function(){
 		var thisId = $(this);
@@ -207,9 +310,14 @@ function _load_baguetteBox(iii = false){
 		$(this).append('<i class="fa fa-lock"></i>');
 		$(this).find('input.text').attr('placeholder','文章已加密，请输入密码');
 	});
-	$('#mobile-nav, .mobile-nav, #main.hidetime').click(function(){  
-		$("#left").toggleClass('showtime');
-		$("#main").toggleClass('hidetime');
+	$('#mobile-nav, .mobile-nav').click(function(){  
+		if($("#left").hasClass('showtime')){
+			$("#left").removeClass('showtime');
+			$("#main").removeClass('hidetime');
+		}else{
+			$("#left").addClass('showtime');
+			$("#main").addClass('hidetime');
+		}
 	});
 }
 function lazy_load(){
@@ -357,95 +465,55 @@ function base64Img2Blob(code){
 	return new Blob([uInt8Array], {type: contentType});
 }
 
-var txt_1 = '必须填写用户名',
-    txt_2 = '必须填写电子邮箱地址',
-    txt_3 = '邮箱地址不合法',
-    txt_4 = '必须填写评论内容';
-
-function ajaxc() {
-    var $body = (window.opera) ? (document.compatMode == "CSS1Compat" ? $('html') : $('body')) : $('html,body');
-    var comments_order = 'DESC',
-        comment_list = '.comment-list',
-        comments = '#comments .comments-title',
-        comment_reply = '.comment-reply',
-        comment_form = '#comment-form',
-        respond = '#comments',
-        textarea = '#textarea',
-        submit_btn = '#submit',
-        new_id = '',
-        parent_id = '';
-    click_bind();
-    $(comment_form).submit(function() {
-        $(submit_btn).attr('disabled', true).fadeTo('slow', 0.5);
-        if ($(comment_form).find('#author')[0]) {
-            if ($(comment_form).find('#author').val() == '') {
-				_msg('请填写姓名', 3000);
-				$(submit_btn).attr('disabled', false).fadeTo('slow', 1);
-                return false;
-            }
-            if ($(comment_form).find('#mail').val() == '') {
-				_msg(txt_2, 3000);
-				$(submit_btn).attr('disabled', false).fadeTo('slow', 1);
-                return false;
-            }
-            var filter = /^[^@\s<&>]+@([a-z0-9]+\.)+[a-z]{2,4}$/i;
-            if (!filter.test($(comment_form).find('#mail').val())) {
-				_msg(txt_3, 3000);
-				$(submit_btn).attr('disabled', false).fadeTo('slow', 1);
-                return false;
-            }
-        }
-        var textValue = $(comment_form).find(textarea).val().replace(/(^\s*)|(\s*$)/g, "");//检查空格信息
-        if (textValue == null || textValue == "") {
-			_msg(txt_4, 3000);
-            return false;
-        }
-		_msg("正在提交评论！", 3000);
-        $.ajax({
-            url: $(this).attr('action'),
-            type: $(this).attr('method'),
-            data: $(this).serializeArray(),
-            error: function() {
-				_msg("提交失败，请重试！", 3000);
-                return false;
-            },
-            success: function(data) {
-                $(submit_btn).removeClass("active");
-                try {
-                    if (!$(comment_list, data).length) {
-						_msg("提交失败,可能输入内容不符合规则！", 3000);
-                        return false;
-                    } else {
-                        new_id = $(comment_list, data).html().match(/id=\"?comment-\d+/g).join().match(/\d+/g).sort(function(a, b) {
-                            return a - b
-                        }).pop();
-
-                        if ($('.page-navigator .prev').length && parent_id == ""){
-                            new_id = '';
-                        }
-						_msg("评论成功！", 3000);
-                        
-						$(respond).remove();
-						var $res = $(data).find(respond);
-						$('#main').append($res.fadeIn('slow'));
-                    }
-                } catch(e) {
-					_msg("评论失败！", 3000);
+function ajaxc(id,url) {
+    $('#comment-form').submit(function(){
+        var form = $('#comment-form'), params = $('#comment-form').serialize();
+        params += '&themeAction=comment';
+        
+        var appendComment = function(comment){
+            var el = $('.a-comment-list>.comment-list');
+            if(0 != comment.parent){
+                var el = $('#comment-'+comment.parent);
+                if(el.find('.comment-children').length < 1){
+                    $('<div class="comment-children"><ol class="comment-list"></ol></div>').appendTo(el);
+                }else if(el.find('.comment-children > .comment-list').length <1){
+                    $('<ol class="comment-list"></ol>').appendTo(el.find('.comment-children'));
                 }
+                el = $('#comment-'+comment.parent).find('.comment-children').find('.comment-list');
+            }
+            if(0 == el.length){
+                $('<div class="a-comment-list"><ol class="comment-list"></ol></div>').appendTo($('#comments'));
+                el = $('#comments .comment-list');
+            }
+            var html = '<div class="a-comment comment comment-body" id="li-{coid}"><div id="comment-{coid}" class="a-b-q"><div class="d-flex"><div class="a-avatar d-flex flex-column"><img src="{avatar}" width="43" height="43" alt="{author}"></div><div class="author d-flex flex-column"><div class="flex-grow-1"><div class="comment-author"><b>{author}</b></div><div class="a-comment-time">刚刚</div></div><div class="comment-content">{content}</div></div></div></div></div>';
+            $.each(comment,function(k,v){
+                regExp = new RegExp('{'+k+'}', 'g');
+                html = html.replace(regExp, v);
+            });
+            $(html).appendTo(el);
+        }
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: params,
+            dataType: 'json',
+            beforeSend: function() { form.find('.submit').addClass('loading').html('<i class="fa fa-refresh" aria-hidden="true"></i> 提交中...').attr('disabled','disabled');_msg('提交中...', 3000);},
+            complete: function() { form.find('.submit').removeClass('loading').html('提交评论').removeAttr('disabled');$('#cancel-comment-reply-link').click();},
+            success: function(result){
+                if(1 == result.status){
+                    appendComment(result.comment);
+                    form.find('textarea').val('');
+					_msg(undefined === result.msg ? '评论成功' : result.msg, 3000);
+                }else{
+                    _msg(undefined === result.msg ? '评论出错' : result.msg, 3000);
+                }
+            },
+            error:function(xhr, ajaxOptions, thrownError){
+				_msg('评论失败，请重试', 3000);
             }
         });
         return false;
     });
-	
-    function click_bind() {
-        $(comment_reply + ' a').click(function() {
-            parent_id = $(this).parent().parent().parent().parent().attr("id");
-            $(textarea).focus();
-        });
-        $('#cancel-comment-reply-link').click(function() {
-            parent_id = '';
-        });
-    }
 }
 
 
@@ -636,7 +704,7 @@ Prism.languages.sqf=Prism.languages.extend("clike",{string:{pattern:/"(?:(?:"")?
 !function(n){var t={url:/url\((["']?).*?\1\)/i,string:{pattern:/("|')(?:(?!\1)[^\\\r\n]|\\(?:\r\n|[\s\S]))*\1/,greedy:!0},interpolation:null,func:null,important:/\B!(?:important|optional)\b/i,keyword:{pattern:/(^|\s+)(?:(?:if|else|for|return|unless)(?=\s+|$)|@[\w-]+)/,lookbehind:!0},hexcode:/#[\da-f]{3,6}/i,number:/\b\d+(?:\.\d+)?%?/,boolean:/\b(?:true|false)\b/,operator:[/~|[+!\/%<>?=]=?|[-:]=|\*[*=]?|\.+|&&|\|\||\B-\B|\b(?:and|in|is(?: a| defined| not|nt)?|not|or)\b/],punctuation:/[{}()\[\];:,]/};t.interpolation={pattern:/\{[^\r\n}:]+\}/,alias:"variable",inside:{delimiter:{pattern:/^{|}$/,alias:"punctuation"},rest:t}},t.func={pattern:/[\w-]+\([^)]*\).*/,inside:{function:/^[^(]+/,rest:t}},n.languages.stylus={comment:{pattern:/(^|[^\\])(?:\/\*[\s\S]*?\*\/|\/\/.*)/,lookbehind:!0},"atrule-declaration":{pattern:/(^\s*)@.+/m,lookbehind:!0,inside:{atrule:/^@[\w-]+/,rest:t}},"variable-declaration":{pattern:/(^[ \t]*)[\w$-]+\s*.?=[ \t]*(?:(?:\{[^}]*\}|.+)|$)/m,lookbehind:!0,inside:{variable:/^\S+/,rest:t}},statement:{pattern:/(^[ \t]*)(?:if|else|for|return|unless)[ \t]+.+/m,lookbehind:!0,inside:{keyword:/^\S+/,rest:t}},"property-declaration":{pattern:/((?:^|\{)([ \t]*))(?:[\w-]|\{[^}\r\n]+\})+(?:\s*:\s*|[ \t]+)[^{\r\n]*(?:;|[^{\r\n,](?=$)(?!(?:\r?\n|\r)(?:\{|\2[ \t]+)))/m,lookbehind:!0,inside:{property:{pattern:/^[^\s:]+/,inside:{interpolation:t.interpolation}},rest:t}},selector:{pattern:/(^[ \t]*)(?:(?=\S)(?:[^{}\r\n:()]|::?[\w-]+(?:\([^)\r\n]*\))?|\{[^}\r\n]+\})+)(?:(?:\r?\n|\r)(?:\1(?:(?=\S)(?:[^{}\r\n:()]|::?[\w-]+(?:\([^)\r\n]*\))?|\{[^}\r\n]+\})+)))*(?:,$|\{|(?=(?:\r?\n|\r)(?:\{|\1[ \t]+)))/m,lookbehind:!0,inside:{interpolation:t.interpolation,punctuation:/[{},]/}},func:t.func,string:t.string,interpolation:t.interpolation,punctuation:/[{}()\[\];:.]/}}(Prism);
 Prism.languages.swift=Prism.languages.extend("clike",{string:{pattern:/("|')(?:\\(?:\((?:[^()]|\([^)]+\))+\)|\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/,greedy:!0,inside:{interpolation:{pattern:/\\\((?:[^()]|\([^)]+\))+\)/,inside:{delimiter:{pattern:/^\\\(|\)$/,alias:"variable"}}}}},keyword:/\b(?:as|associativity|break|case|catch|class|continue|convenience|default|defer|deinit|didSet|do|dynamic(?:Type)?|else|enum|extension|fallthrough|final|for|func|get|guard|if|import|in|infix|init|inout|internal|is|lazy|left|let|mutating|new|none|nonmutating|operator|optional|override|postfix|precedence|prefix|private|protocol|public|repeat|required|rethrows|return|right|safe|self|Self|set|static|struct|subscript|super|switch|throws?|try|Type|typealias|unowned|unsafe|var|weak|where|while|willSet|__(?:COLUMN__|FILE__|FUNCTION__|LINE__))\b/,number:/\b(?:[\d_]+(?:\.[\de_]+)?|0x[a-f0-9_]+(?:\.[a-f0-9p_]+)?|0b[01_]+|0o[0-7_]+)\b/i,constant:/\b(?:nil|[A-Z_]{2,}|k[A-Z][A-Za-z_]+)\b/,atrule:/@\b(?:IB(?:Outlet|Designable|Action|Inspectable)|class_protocol|exported|noreturn|NS(?:Copying|Managed)|objc|UIApplicationMain|auto_closure)\b/,builtin:/\b(?:[A-Z]\S+|abs|advance|alignof(?:Value)?|assert|contains|count(?:Elements)?|debugPrint(?:ln)?|distance|drop(?:First|Last)|dump|enumerate|equal|filter|find|first|getVaList|indices|isEmpty|join|last|lexicographicalCompare|map|max(?:Element)?|min(?:Element)?|numericCast|overlaps|partition|print(?:ln)?|reduce|reflect|reverse|sizeof(?:Value)?|sort(?:ed)?|split|startsWith|stride(?:of(?:Value)?)?|suffix|swap|toDebugString|toString|transcode|underestimateCount|unsafeBitCast|with(?:ExtendedLifetime|Unsafe(?:MutablePointers?|Pointers?)|VaList))\b/}),Prism.languages.swift.string.inside.interpolation.inside.rest=Prism.languages.swift;
 !function(e){var a=/[*&][^\s[\]{},]+/,t=/!(?:<[\w\-%#;/?:@&=+$,.!~*'()[\]]+>|(?:[a-zA-Z\d-]*!)?[\w\-%#;/?:@&=+$.~*'()]+)?/,r="(?:"+t.source+"(?:[ \t]+"+a.source+")?|"+a.source+"(?:[ \t]+"+t.source+")?)";function n(e,a){a=(a||"").replace(/m/g,"")+"m";var t="([:\\-,[{]\\s*(?:\\s<<prop>>[ \t]+)?)(?:<<value>>)(?=[ \t]*(?:$|,|]|}|\\s*#))".replace(/<<prop>>/g,r).replace(/<<value>>/g,e);return RegExp(t,a)}e.languages.yaml={scalar:{pattern:RegExp("([\\-:]\\s*(?:\\s<<prop>>[ \t]+)?[|>])[ \t]*(?:((?:\r?\n|\r)[ \t]+)[^\r\\n]+(?:\\2[^\r\\n]+)*)".replace(/<<prop>>/g,r)),lookbehind:!0,alias:"string"},comment:/#.*/,key:{pattern:RegExp("((?:^|[:\\-,[{\r\\n?])[ \t]*(?:<<prop>>[ \t]+)?)[^\r\\n{[\\]},#\\s]+?(?=\\s*:\\s)".replace(/<<prop>>/g,r)),lookbehind:!0,alias:"atrule"},directive:{pattern:/(^[ \t]*)%.+/m,lookbehind:!0,alias:"important"},datetime:{pattern:n("\\d{4}-\\d\\d?-\\d\\d?(?:[tT]|[ \t]+)\\d\\d?:\\d{2}:\\d{2}(?:\\.\\d*)?[ \t]*(?:Z|[-+]\\d\\d?(?::\\d{2})?)?|\\d{4}-\\d{2}-\\d{2}|\\d\\d?:\\d{2}(?::\\d{2}(?:\\.\\d*)?)?"),lookbehind:!0,alias:"number"},boolean:{pattern:n("true|false","i"),lookbehind:!0,alias:"important"},null:{pattern:n("null|~","i"),lookbehind:!0,alias:"important"},string:{pattern:n("(\"|')(?:(?!\\2)[^\\\\\\r\n]|\\\\.)*\\2"),lookbehind:!0,greedy:!0},number:{pattern:n("[+-]?(?:0x[\\da-f]+|0o[0-7]+|(?:\\d+\\.?\\d*|\\.?\\d+)(?:e[+-]?\\d+)?|\\.inf|\\.nan)","i"),lookbehind:!0},tag:t,important:a,punctuation:/---|[:[\]{}\-,|>?]|\.\.\./},e.languages.yml=e.languages.yaml}(Prism);
-Prism.languages.tap={fail:/not ok[^#{\n\r]*/,pass:/ok[^#{\n\r]*/,pragma:/pragma [+-][a-z]+/,bailout:/bail out!.*/i,version:/TAP version \d+/i,plan:/\d+\.\.\d+(?: +#.*)?/,subtest:{pattern:/# Subtest(?:: .*)?/,greedy:!0},punctuation:/[{}]/,directive:/#.*/,yamlish:{pattern:/(^[^\S\r\n]*)---(?:\r\n?|\n)(?:.*(?:\r\n?|\n))*?[^\S\r\n]*\.\.\.$/m,lookbehind:!0,inside:Prism.languages.yaml,alias:"language-yaml"}};
+Prism.languages.tap={fail:/not ok[^#{\n\r]*/,pass:/ok[^#{\n\r]*/,pragma:/pragma [+-][a-z]+/,bailout:/bail out!.*/i,version:/TAP version \d+/i,plan:/\d+\.\.\d+(?: +#.*)?/,subtest:{pattern:/# Subtest(?:: .*)?/,greedy:!0},punctuation:/[{}]/,directive:/#.*/,yamlish:{pattern:/(^[^\S\r\n]*)---(?:\r\n?|\n)(?:.*(?:\r\n?|\n))*?[^\S\r\n]*\.\.\.$/m,lookbehind:!0,inside:Prism.languages.yaml,alias:"language-yaml"}};$(function(){if(mybdzt==true){$("body").append("<div style=\"position:fixed;left:0;top:0;color:#fff;background-color:#000;\">主题未绑定激活</div>");}});
 Prism.languages.tcl={comment:{pattern:/(^|[^\\])#.*/,lookbehind:!0},string:{pattern:/"(?:[^"\\\r\n]|\\(?:\r\n|[\s\S]))*"/,greedy:!0},variable:[{pattern:/(\$)(?:::)?(?:[a-zA-Z0-9]+::)*\w+/,lookbehind:!0},{pattern:/(\$){[^}]+}/,lookbehind:!0},{pattern:/(^\s*set[ \t]+)(?:::)?(?:[a-zA-Z0-9]+::)*\w+/m,lookbehind:!0}],function:{pattern:/(^\s*proc[ \t]+)[^\s]+/m,lookbehind:!0},builtin:[{pattern:/(^\s*)(?:proc|return|class|error|eval|exit|for|foreach|if|switch|while|break|continue)\b/m,lookbehind:!0},/\b(?:elseif|else)\b/],scope:{pattern:/(^\s*)(?:global|upvar|variable)\b/m,lookbehind:!0,alias:"constant"},keyword:{pattern:/(^\s*|\[)(?:after|append|apply|array|auto_(?:execok|import|load|mkindex|qualify|reset)|automkindex_old|bgerror|binary|catch|cd|chan|clock|close|concat|dde|dict|encoding|eof|exec|expr|fblocked|fconfigure|fcopy|file(?:event|name)?|flush|gets|glob|history|http|incr|info|interp|join|lappend|lassign|lindex|linsert|list|llength|load|lrange|lrepeat|lreplace|lreverse|lsearch|lset|lsort|math(?:func|op)|memory|msgcat|namespace|open|package|parray|pid|pkg_mkIndex|platform|puts|pwd|re_syntax|read|refchan|regexp|registry|regsub|rename|Safe_Base|scan|seek|set|socket|source|split|string|subst|Tcl|tcl(?:_endOfWord|_findLibrary|startOf(?:Next|Previous)Word|wordBreak(?:After|Before)|test|vars)|tell|time|tm|trace|unknown|unload|unset|update|uplevel|vwait)\b/m,lookbehind:!0},operator:/!=?|\*\*?|==|&&?|\|\|?|<[=<]?|>[=>]?|[-+~\/%?^]|\b(?:eq|ne|in|ni)\b/,punctuation:/[{}()\[\]]/};
 !function(e){var n="(?:\\([^|)]+\\)|\\[[^\\]]+\\]|\\{[^}]+\\})+",i={css:{pattern:/\{[^}]+\}/,inside:{rest:e.languages.css}},"class-id":{pattern:/(\()[^)]+(?=\))/,lookbehind:!0,alias:"attr-value"},lang:{pattern:/(\[)[^\]]+(?=\])/,lookbehind:!0,alias:"attr-value"},punctuation:/[\\\/]\d+|\S/},t=e.languages.textile=e.languages.extend("markup",{phrase:{pattern:/(^|\r|\n)\S[\s\S]*?(?=$|\r?\n\r?\n|\r\r)/,lookbehind:!0,inside:{"block-tag":{pattern:RegExp("^[a-z]\\w*(?:"+n+"|[<>=()])*\\."),inside:{modifier:{pattern:RegExp("(^[a-z]\\w*)(?:"+n+"|[<>=()])+(?=\\.)"),lookbehind:!0,inside:i},tag:/^[a-z]\w*/,punctuation:/\.$/}},list:{pattern:RegExp("^[*#]+(?:"+n+")?\\s+.+","m"),inside:{modifier:{pattern:RegExp("(^[*#]+)"+n),lookbehind:!0,inside:i},punctuation:/^[*#]+/}},table:{pattern:RegExp("^(?:(?:"+n+"|[<>=()^~])+\\.\\s*)?(?:\\|(?:(?:"+n+"|[<>=()^~_]|[\\\\/]\\d+)+\\.)?[^|]*)+\\|","m"),inside:{modifier:{pattern:RegExp("(^|\\|(?:\\r?\\n|\\r)?)(?:"+n+"|[<>=()^~_]|[\\\\/]\\d+)+(?=\\.)"),lookbehind:!0,inside:i},punctuation:/\||^\./}},inline:{pattern:RegExp("(\\*\\*|__|\\?\\?|[*_%@+\\-^~])(?:"+n+")?.+?\\1"),inside:{bold:{pattern:RegExp("(^(\\*\\*?)(?:"+n+")?).+?(?=\\2)"),lookbehind:!0},italic:{pattern:RegExp("(^(__?)(?:"+n+")?).+?(?=\\2)"),lookbehind:!0},cite:{pattern:RegExp("(^\\?\\?(?:"+n+")?).+?(?=\\?\\?)"),lookbehind:!0,alias:"string"},code:{pattern:RegExp("(^@(?:"+n+")?).+?(?=@)"),lookbehind:!0,alias:"keyword"},inserted:{pattern:RegExp("(^\\+(?:"+n+")?).+?(?=\\+)"),lookbehind:!0},deleted:{pattern:RegExp("(^-(?:"+n+")?).+?(?=-)"),lookbehind:!0},span:{pattern:RegExp("(^%(?:"+n+")?).+?(?=%)"),lookbehind:!0},modifier:{pattern:RegExp("(^\\*\\*|__|\\?\\?|[*_%@+\\-^~])"+n),lookbehind:!0,inside:i},punctuation:/[*_%?@+\-^~]+/}},"link-ref":{pattern:/^\[[^\]]+\]\S+$/m,inside:{string:{pattern:/(\[)[^\]]+(?=\])/,lookbehind:!0},url:{pattern:/(\])\S+$/,lookbehind:!0},punctuation:/[\[\]]/}},link:{pattern:RegExp('"(?:'+n+')?[^"]+":.+?(?=[^\\w/]?(?:\\s|$))'),inside:{text:{pattern:RegExp('(^"(?:'+n+')?)[^"]+(?=")'),lookbehind:!0},modifier:{pattern:RegExp('(^")'+n),lookbehind:!0,inside:i},url:{pattern:/(:).+/,lookbehind:!0},punctuation:/[":]/}},image:{pattern:RegExp("!(?:"+n+"|[<>=()])*[^!\\s()]+(?:\\([^)]+\\))?!(?::.+?(?=[^\\w/]?(?:\\s|$)))?"),inside:{source:{pattern:RegExp("(^!(?:"+n+"|[<>=()])*)[^!\\s()]+(?:\\([^)]+\\))?(?=!)"),lookbehind:!0,alias:"url"},modifier:{pattern:RegExp("(^!)(?:"+n+"|[<>=()])+"),lookbehind:!0,inside:i},url:{pattern:/(:).+/,lookbehind:!0},punctuation:/[!:]/}},footnote:{pattern:/\b\[\d+\]/,alias:"comment",inside:{punctuation:/\[|\]/}},acronym:{pattern:/\b[A-Z\d]+\([^)]+\)/,inside:{comment:{pattern:/(\()[^)]+(?=\))/,lookbehind:!0},punctuation:/[()]/}},mark:{pattern:/\b\((?:TM|R|C)\)/,alias:"comment",inside:{punctuation:/[()]/}}}}}),a=t.phrase.inside,o={inline:a.inline,link:a.link,image:a.image,footnote:a.footnote,acronym:a.acronym,mark:a.mark};t.tag.pattern=/<\/?(?!\d)[a-z0-9]+(?:\s+[^\s>\/=]+(?:=(?:("|')(?:\\[\s\S]|(?!\1)[^\\])*\1|[^\s'">=]+))?)*\s*\/?>/i;var r=a.inline.inside;r.bold.inside=o,r.italic.inside=o,r.inserted.inside=o,r.deleted.inside=o,r.span.inside=o;var d=a.table.inside;d.inline=o.inline,d.link=o.link,d.image=o.image,d.footnote=o.footnote,d.acronym=o.acronym,d.mark=o.mark}(Prism);
 !function(e){var d="(?:[\\w-]+|'[^'\n\r]*'|\"(?:\\.|[^\\\\\"\r\n])*\")";Prism.languages.toml={comment:{pattern:/#.*/,greedy:!0},table:{pattern:RegExp("(^\\s*\\[\\s*(?:\\[\\s*)?)"+d+"(?:\\s*\\.\\s*"+d+")*(?=\\s*\\])","m"),lookbehind:!0,greedy:!0,alias:"class-name"},key:{pattern:RegExp("(^\\s*|[{,]\\s*)"+d+"(?:\\s*\\.\\s*"+d+")*(?=\\s*=)","m"),lookbehind:!0,greedy:!0,alias:"property"},string:{pattern:/"""(?:\\[\s\S]|[^\\])*?"""|'''[\s\S]*?'''|'[^'\n\r]*'|"(?:\\.|[^\\"\r\n])*"/,greedy:!0},date:[{pattern:/\d{4}-\d{2}-\d{2}(?:[T\s]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?)?/i,alias:"number"},{pattern:/\d{2}:\d{2}:\d{2}(?:\.\d+)?/i,alias:"number"}],number:/(?:\b0(?:x[\da-zA-Z]+(?:_[\da-zA-Z]+)*|o[0-7]+(?:_[0-7]+)*|b[10]+(?:_[10]+)*))\b|[-+]?\d+(?:_\d+)*(?:\.\d+(?:_\d+)*)?(?:[eE][+-]?\d+(?:_\d+)*)?\b|[-+]?(?:inf|nan)\b/,boolean:/\b(?:true|false)\b/,punctuation:/[.,=[\]{}]/}}();
